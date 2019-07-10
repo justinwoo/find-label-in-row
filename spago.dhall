@@ -5,7 +5,12 @@ You can edit this file as you like.
 { name =
     "my-project"
 , dependencies =
-    [ "console", "effect", "psci-support", "typelevel-prelude" ]
+    [ "console"
+    , "effect"
+    , "foldable-traversable"
+    , "psci-support"
+    , "typelevel-prelude"
+    ]
 , packages =
     ./packages.dhall
 , sources =

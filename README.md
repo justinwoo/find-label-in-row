@@ -1,6 +1,33 @@
 # chairs are fruits
 
 ```purs
+type FruitsRow = ( apple :: Int, grenade :: String, chair :: Boolean )
+
+isThisFruit :: forall l result
+   . LabelInRow l FruitsRow result
+  => IsBoolean result
+  => IsSymbol l
+  => SProxy l
+  -> String
+isThisFruit sp =
+  if test
+    then "Yes, " <> fruit <> " is a bonafide fruit."
+    else "No, " <> fruit <> " ain't no god damn fruit."
+  where
+    fruit = reflectSymbol sp
+    test = reflectBoolean (BProxy :: _ result)
+
+main :: Effect Unit
+main = do
+  traverse_ log
+    [ isThisFruit (SProxy :: _ "wheels")
+    , isThisFruit (SProxy :: _ "chair")
+    ]
+  -- No, wheels ain't no god damn fruit.
+  -- Yes, chair is a bonafide fruit.
+```
+
+```purs
 type Fruits = { apple :: Int, grenade :: String, chair :: Boolean }
 
 fruits :: Fruits

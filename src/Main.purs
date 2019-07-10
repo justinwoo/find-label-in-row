@@ -2,13 +2,14 @@ module Main where
 
 import Prelude
 
+import Data.Foldable (traverse_)
 import Effect (Effect)
 import Effect.Console (log)
 import Prim.Boolean as B
 import Prim.RowList as RL
-import Type.Data.Boolean (class If)
+import Type.Data.Boolean (class If, reflectBoolean)
 import Type.Data.Symbol as Symbol
-import Type.Prelude (BProxy(..), SProxy(..))
+import Type.Prelude (class IsBoolean, class IsSymbol, BProxy(..), SProxy(..), reflectSymbol)
 
 class LabelInRow (l :: Symbol) (r :: # Type) (result :: B.Boolean)
   | l r -> result
@@ -51,6 +52,27 @@ leaves = labelInRow (SProxy :: _ "leaf") fruits
 chairs :: BProxy B.True
 chairs = labelInRow (SProxy :: _ "chair") fruits
 
+type FruitsRow = ( apple :: Int, grenade :: String, chair :: Boolean )
+
+isThisFruit :: forall l result
+   . LabelInRow l FruitsRow result
+  => IsBoolean result
+  => IsSymbol l
+  => SProxy l
+  -> String
+isThisFruit sp =
+  if test
+    then "Yes, " <> fruit <> " is a bonafide fruit."
+    else "No, " <> fruit <> " ain't no god damn fruit."
+  where
+    fruit = reflectSymbol sp
+    test = reflectBoolean (BProxy :: _ result)
+
 main :: Effect Unit
 main = do
-  log "🍝"
+  traverse_ log
+    [ isThisFruit (SProxy :: _ "wheels")
+    , isThisFruit (SProxy :: _ "chair")
+    ]
+  -- No, wheels ain't no god damn fruit.
+  -- Yes, chair is a bonafide fruit.
